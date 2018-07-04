@@ -5,4 +5,6 @@ package cn.epsit.mutildownload.model;
  */
 
 public class BaseEntity {
+    public String status;
+
 }
