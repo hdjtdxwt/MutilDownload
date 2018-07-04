@@ -1,10 +1,29 @@
 package cn.epsit.mutildownload.manager;
 
+import android.os.Handler;
+import android.os.Message;
+import android.util.Log;
+
+import java.io.File;
+import java.util.List;
+
+import cn.epsit.mutildownload.listener.ProgressListener;
+import cn.epsit.mutildownload.model.BaseEntity;
+import cn.epsit.mutildownload.retrofit.APIService;
+import cn.epsit.mutildownload.retrofit.HttpApiService;
+import cn.epsit.mutildownload.retrofit.RequestParameter;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 /**
  * Created by Administrator on 2018/7/5.
  */
 
-public class DownloadTask implements Runnable, ProgressListener  {
+public class DownloadTask implements Runnable, ProgressListener {
     //更新任务进度消息
     private static final int UPDATE_PROGRESS_ID = 0x100;
     //下载网络服务
@@ -102,7 +121,7 @@ public class DownloadTask implements Runnable, ProgressListener  {
             downloadCall.enqueue(new Callback<File>() {
                 @Override
                 public void onResponse(Call<File> call, Response<File> response) {
-                    Log.i(response.toString());
+                    Log.i("onResponse",response.toString());
                     if (response.code() == 200) {
                         mySelf.downloadFile = response.body();
                         if (mySelf.downloadFile != null && !mySelf.downloadFile.getPath().endsWith(".tmp")) {
@@ -135,7 +154,7 @@ public class DownloadTask implements Runnable, ProgressListener  {
             uploadCall.enqueue(new Callback<BaseEntity>() {
                 @Override
                 public void onResponse(Call<BaseEntity> call, Response<BaseEntity> response) {
-                    Log.i(response.body().toString());
+                    Log.i("onResponse",response.body().toString());
                     if (response.code() == 200 && response.body().status.equals("2000")) {
                         sendUpdateProgressMessage(100, 100, true);
                         mySelf.state = STATE.FINISHED;
@@ -148,7 +167,7 @@ public class DownloadTask implements Runnable, ProgressListener  {
 
                 @Override
                 public void onFailure(Call<BaseEntity> call, Throwable t) {
-                    Log.e(t.getMessage());
+                    Log.e("onFailure",t.getMessage());
                 }
             });
         }
